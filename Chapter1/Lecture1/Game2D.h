@@ -69,6 +69,7 @@ namespace jm
 
 		virtual void update() 
 		{
+			//std::cout << "mother update" << std::endl;
 			// draw
 			// play sould
 			// physics update

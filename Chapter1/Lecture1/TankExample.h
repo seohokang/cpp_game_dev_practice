@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 #include "Game2D.h"
 
 namespace jm
@@ -50,8 +50,8 @@ namespace jm
 	{
 	public:
 		MyTank tank;
-
-		MyBullet *bullet = nullptr;
+		std::vector <MyBullet*> bullets;
+		MyBullet* bullet = nullptr;
 		//TODO: allow multiple bullets
 		//TODO: delete bullets when they go out of the screen
 
@@ -60,34 +60,50 @@ namespace jm
 			: Game2D("This is my digital canvas!", 1024, 768, false, 2)
 		{}
 
-		~TankExample()
-		{
-			if(bullet != nullptr) delete bullet;
-		}
+		//~TankExample()
+		//{
+		//	if(bullets != nullptr) delete bullets;
+		//}
 
 		void update() override
 		{
 			// move tank
-			if (isKeyPressed(GLFW_KEY_LEFT))	tank.center.x -= 0.5f * getTimeStep();
-			if (isKeyPressed(GLFW_KEY_RIGHT))	tank.center.x += 0.5f * getTimeStep();
-			if (isKeyPressed(GLFW_KEY_UP))		tank.center.y += 0.5f * getTimeStep();
-			if (isKeyPressed(GLFW_KEY_DOWN))	tank.center.y -= 0.5f * getTimeStep();
+			if (isKeyPressed(GLFW_KEY_LEFT))	tank.center.x -= 0.01f * getTimeStep();
+			if (isKeyPressed(GLFW_KEY_RIGHT))	tank.center.x += 0.01f * getTimeStep();
+			if (isKeyPressed(GLFW_KEY_UP))		tank.center.y += 0.01f * getTimeStep();
+			if (isKeyPressed(GLFW_KEY_DOWN))	tank.center.y -= 0.01f * getTimeStep();
 
 			// shoot a cannon ball
 			if (isKeyPressedAndReleased(GLFW_KEY_SPACE))
 			{
 				bullet = new MyBullet;
+				bullets.push_back(bullet);
 				bullet->center = tank.center;
 				bullet->center.x += 0.2f;
 				bullet->center.y += 0.1f;
-				bullet->velocity = vec2(2.0f, 0.0f);
+				bullet->velocity = vec2(0.05f, 0.0f);
 			}
+					
 
-			if (bullet != nullptr) bullet->update(getTimeStep());
-
+			//if (bullet != nullptr)
+			//{	
+			//	bullet->update(getTimeStep());
+			//	std::cout << bullet->center.x << std::endl;
+			//}
 			// rendering
 			tank.draw();
-			if (bullet != nullptr) bullet->draw();
+			for (auto& bullet : bullets)
+			{
+				bullet->update(getTimeStep());
+				if (bullet->center.x > 1.4)
+				{
+ 					delete bullet;
+					bullets.erase(bullets.begin());
+				}
+				bullet->draw();
+				std::cout << "Bullet Memory Size:" << bullets.size() << std::endl;
+			}
+			//if (bullet != nullptr) bullet->draw();
 		}
 	};
 }
