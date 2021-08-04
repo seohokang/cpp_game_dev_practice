@@ -6,9 +6,9 @@ namespace jm
 	class Triangle : public GeometricObj
 	{
 	public:
-		void init(const RGB color_in, const vec2 pos_in,const float size_in)
+		void init(const RGB color_in, const vec2 pos_in, const float angle_in, const float size_in)
 		{
-			GeometricObj::init(color_in, pos_in);
+			GeometricObj::init(color_in, pos_in, angle_in);
 			size = size_in;
 		}
 
