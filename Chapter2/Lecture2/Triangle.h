@@ -6,14 +6,9 @@ namespace jm
 	class Triangle : public GeometricObj
 	{
 	public:
-		void draw()
+		void drawGeometry() override
 		{
-			beginTransformation();
-			{
-				translate(pos);
-				drawFilledTriangle(color,size);
-			}
-			endTransformation();
+			drawFilledTriangle(color,size);
 		}
 	};
 }

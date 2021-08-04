@@ -12,6 +12,17 @@ namespace jm
 			color = color_in;
 			size = size_in;
 		}
+		virtual void drawGeometry() {};
+
+		void draw()
+		{
+			beginTransformation();
+			{
+				translate(pos);
+				drawGeometry();
+			}
+			endTransformation();
+		}
 
 	public:
 		vec2 pos;
