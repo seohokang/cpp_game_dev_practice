@@ -48,5 +48,15 @@
     <ClInclude Include="Examples\PrimitivesGallery.h">
       <Filter>Examples</Filter>
     </ClInclude>
+    <ClInclude Include="Triangle.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Circle.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometricObj.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Box.h" />
   </ItemGroup>
 </Project>

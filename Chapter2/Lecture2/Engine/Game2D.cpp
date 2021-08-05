@@ -218,7 +218,7 @@ namespace jm
 	void Game2D::run()
 	{
 		if (glfw_window == nullptr)
-			init("This is my digital canvas!", 1280, 960, false); // initialize with default setting
+			init("This is my digital canvas!", 1280/4*3, 960 / 4 * 3, false); // initialize with default setting
 
 		while (!glfwWindowShouldClose(glfw_window))// main loop
 		{
