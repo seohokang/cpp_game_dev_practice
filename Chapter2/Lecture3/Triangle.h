@@ -7,6 +7,10 @@ namespace jm
 	class Triangle : public GeometricObject
 	{
 	public:
+		Triangle(const RGB& _color, const vec2& _pos, const float& _size)
+		{
+			init(_color, _pos, _size);
+		}
 		float size;
 
 		void init(const RGB & _color, const vec2 & _pos, const float & _size)
