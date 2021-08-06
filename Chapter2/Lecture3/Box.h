@@ -12,6 +12,10 @@ namespace jm
 		{
 			init(_color, _pos, _width, _height);
 		}
+		~Box() override
+		{
+			std::cout << "box destructor" << std::endl;
+		}
 		float width, height;
 
 		void init(const RGB & _color, const vec2 & _pos, const float & _width, 
