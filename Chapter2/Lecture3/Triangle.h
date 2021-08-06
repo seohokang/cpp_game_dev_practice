@@ -11,7 +11,7 @@ namespace jm
 		{
 			init(_color, _pos, _size);
 		}
-		~Triangle() override
+		~Triangle()
 		{
 			std::cout << "triangle destructor" << std::endl;
 		}

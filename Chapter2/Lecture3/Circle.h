@@ -11,7 +11,7 @@ namespace jm
 		{
 			init(_color, _pos, _size);
 		}
-		~Circle() override
+		~Circle() 
 		{
 			std::cout << "circle destructor" << std::endl;
 		}

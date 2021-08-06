@@ -12,7 +12,7 @@ namespace jm
 		{
 			init(_color, _pos, _width, _height);
 		}
-		~Box() override
+		~Box()
 		{
 			std::cout << "box destructor" << std::endl;
 		}
