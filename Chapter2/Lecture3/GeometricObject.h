@@ -7,6 +7,8 @@ namespace jm
 	class GeometricObject
 	{
 	public:
+		virtual ~GeometricObject()
+		{}
 		vec2 pos;
 		RGB  color;
 
