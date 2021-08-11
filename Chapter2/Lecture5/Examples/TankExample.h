@@ -2,6 +2,8 @@
 
 #include "Game2D.h"
 #include <map>
+#include <fstream>
+#include <string>
 
 namespace jm
 {
@@ -9,6 +11,10 @@ namespace jm
 	{
 	public:
 		virtual void moveUp(float dt) = 0;
+		virtual void moveDown(float dt) = 0;
+		virtual void moveLeft(float dt) = 0;
+		virtual void moveRight(float dt) = 0;
+
 	};
 
 	class Command
@@ -21,9 +27,36 @@ namespace jm
 	class UpCommand : public Command 
 	{
 	public:
-		virtual void execute(Actor& actor, float dt) override
+		void execute(Actor& actor, float dt) override
 		{
 			actor.moveUp(dt);
+		}
+	};
+
+	class DownCommand : public Command
+	{
+	public:
+		void execute(Actor& actor, float dt) override
+		{
+			actor.moveDown(dt);
+		}
+	};
+
+	class LeftCommand : public Command
+	{
+	public:
+		void execute(Actor& actor, float dt) override
+		{
+			actor.moveLeft(dt);
+		}
+	};
+
+	class RightCommand : public Command
+	{
+	public:
+		void execute(Actor& actor, float dt) override
+		{
+			actor.moveRight(dt);
 		}
 	};
 
@@ -35,7 +68,19 @@ namespace jm
 
 		void moveUp(float dt) override
 		{
-			center.y += 0.5f * dt;
+			center.y += 0.05f * dt;
+		}
+		void moveDown(float dt) override
+		{
+			center.y -= 0.05f * dt;
+		}
+		void moveLeft(float dt) override
+		{
+			center.x -= 0.05f * dt;
+		}
+		void moveRight(float dt) override
+		{
+			center.x += 0.05f * dt;
 		}
 
 		void draw()
@@ -46,7 +91,7 @@ namespace jm
 				drawFilledBox(Colors::green, 0.25f, 0.1f); // body
 				translate(-0.02f, 0.1f);
 				drawFilledBox(Colors::blue, 0.15f, 0.09f); // turret
-				translate(0.15f, 0.0f);
+		 		translate(0.15f, 0.0f);
 				drawFilledBox(Colors::red, 0.15f, 0.03f);  // barrel
 			}
 			endTransformation();
@@ -56,23 +101,24 @@ namespace jm
 	class InputHandler
 	{
 	public:
-		Command * button_up = nullptr;
+		//Command * button_up = nullptr;
 
-		//std::map<int, Command *> key_command_map;
+		std::map<int, Command *> key_command_map;
 
-		InputHandler()
+		/*InputHandler()
 		{
 			button_up = new UpCommand;
-		}
+		}*/
 
 		void handleInput(Game2D & game, Actor & actor, float dt)
 		{
-			if (game.isKeyPressed(GLFW_KEY_UP))  button_up->execute(actor, dt);
+			//if (game.isKeyPressed(GLFW_KEY_UP))  button_up->execute(actor, dt);
 
-			/*for (auto & m : key_command_map)
+			for (auto & m : key_command_map)
 			{
+				std::cout << m.first << std::endl;
 				if (game.isKeyPressed(m.first)) m.second->execute(actor, dt);
-			}*/
+			}
 		}
 	};
 
@@ -80,15 +126,23 @@ namespace jm
 	{
 	public:
 		MyTank tank;
-
 		InputHandler input_handler;
 
 	public:
 		TankExample()
 			: Game2D("This is my digital canvas!", 1024, 768, false, 2)
 		{
-			//key mapping
-			//input_handler.key_command_map[GLFW_KEY_UP] = new UpCommand;
+			std::string key, value;
+			std::ifstream myfile("key_binding.txt");
+			
+			for (int i = 0; i < 4; ++i)
+			{
+				myfile >> key >> value;
+				if (key == "W")	input_handler.key_command_map[GLFW_KEY_W] = new UpCommand;
+				else if (key == "S") input_handler.key_command_map[GLFW_KEY_S] = new DownCommand;
+				else if (key == "A") input_handler.key_command_map[GLFW_KEY_A] = new LeftCommand;
+				else if (key == "D") input_handler.key_command_map[GLFW_KEY_D] = new RightCommand;
+			}
 		}
 
 		~TankExample()
