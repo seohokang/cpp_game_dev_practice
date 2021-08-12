@@ -14,7 +14,7 @@ namespace jm
 		virtual void moveDown(float dt) = 0;
 		virtual void moveLeft(float dt) = 0;
 		virtual void moveRight(float dt) = 0;
-
+		virtual void shoot(float dt) = 0;
 	};
 
 	class Command
@@ -60,12 +60,43 @@ namespace jm
 		}
 	};
 
-	class MyTank : public Actor
+	class ShootCommand : public Command
+	{
+	public:
+		void execute(Actor& actor, float dt) override
+		{
+			actor.shoot(dt);
+		}
+	};
+
+	class MyBullet
 	{
 	public:
 		vec2 center = vec2(0.0f, 0.0f);
-		//vec2 direction = vec2(1.0f, 0.0f, 0.0f);
+		vec2 velocity = vec2(0.0f, 0.0f);
+		void draw()
+		{
+			//std::cout << center << std::endl;
+			beginTransformation();
+			translate(center);
+			drawFilledRegularConvexPolygon(Colors::yellow, 0.02f, 8);
+			drawWiredRegularConvexPolygon(Colors::gray, 0.02f, 8);
+			endTransformation();
+		}
 
+		void update(const float& dt)
+		{
+			center += velocity * dt;
+		}
+	};
+
+	class MyTank : public Actor
+	{
+	public:
+		MyBullet* bullet = nullptr;
+		std::vector <MyBullet*> bullets;
+		vec2 center = vec2(0.0f, 0.0f);
+		//vec2 direction = vec2(1.0f, 0.0f, 0.0f);
 		void moveUp(float dt) override
 		{
 			center.y += 0.05f * dt;
@@ -82,7 +113,15 @@ namespace jm
 		{
 			center.x += 0.05f * dt;
 		}
-
+		void shoot(float dt) override 
+		{
+			bullet = new MyBullet;
+			bullets.push_back(bullet);
+			bullet->center = this->center;
+			bullet->center.x += 0.2f;
+			bullet->center.y += 0.1f;
+			bullet->velocity = vec2(0.2f, 0.0f);
+		}
 		void draw()
 		{
 			beginTransformation();
@@ -96,13 +135,13 @@ namespace jm
 			}
 			endTransformation();
 		}
+
 	};
 
 	class InputHandler
 	{
 	public:
 		//Command * button_up = nullptr;
-
 		std::map<int, Command *> key_command_map;
 
 		/*InputHandler()
@@ -116,8 +155,14 @@ namespace jm
 
 			for (auto & m : key_command_map)
 			{
-				std::cout << m.first << std::endl;
-				if (game.isKeyPressed(m.first)) m.second->execute(actor, dt);
+				if (game.isKeyPressedAndReleased(m.first) && (m.first == GLFW_KEY_SPACE))
+				{
+					m.second->execute(actor, dt);
+				}
+				else if (game.isKeyPressed(m.first) && (m.first != GLFW_KEY_SPACE))
+				{
+					m.second->execute(actor, dt);
+				}
 			}
 		}
 	};
@@ -127,21 +172,22 @@ namespace jm
 	public:
 		MyTank tank;
 		InputHandler input_handler;
-
 	public:
 		TankExample()
 			: Game2D("This is my digital canvas!", 1024, 768, false, 2)
 		{
 			std::string key, value;
 			std::ifstream myfile("key_binding.txt");
-			
-			for (int i = 0; i < 4; ++i)
+			std::vector <MyBullet*> bullets;
+
+			for (int i = 0; i < 5; ++i)
 			{
 				myfile >> key >> value;
 				if (key == "W")	input_handler.key_command_map[GLFW_KEY_W] = new UpCommand;
 				else if (key == "S") input_handler.key_command_map[GLFW_KEY_S] = new DownCommand;
 				else if (key == "A") input_handler.key_command_map[GLFW_KEY_A] = new LeftCommand;
 				else if (key == "D") input_handler.key_command_map[GLFW_KEY_D] = new RightCommand;
+				else if (key == "SPACE") input_handler.key_command_map[GLFW_KEY_SPACE] = new ShootCommand;
 			}
 		}
 
@@ -151,16 +197,23 @@ namespace jm
 
 		void update() override
 		{
-			// move tank
-			/*if (isKeyPressed(GLFW_KEY_LEFT))	tank.center.x -= 0.5f * getTimeStep();
-			if (isKeyPressed(GLFW_KEY_RIGHT))	tank.center.x += 0.5f * getTimeStep();
-			if (isKeyPressed(GLFW_KEY_UP))		tank.center.y += 0.5f * getTimeStep();
-			if (isKeyPressed(GLFW_KEY_DOWN))	tank.center.y -= 0.5f * getTimeStep();*/
-
 			input_handler.handleInput(*this, tank, getTimeStep());
-
-			// rendering
 			tank.draw();
+			// rendering
+			for (auto& bullet : tank.bullets)
+			{
+				if (bullet != nullptr)
+				{
+					bullet->update(getTimeStep());
+					if (bullet->center.x > 1.4)
+					{
+						delete bullet;
+						tank.bullets.erase(tank.bullets.begin());
+					}
+					bullet->draw();
+				}
+			}
+			
 		}
 	};
 }
